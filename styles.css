@@ -1,0 +1,28 @@
+.eic-card {
+	padding: 16px;
+	margin: 12px 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+}
+
+.eic-line {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	line-height: 1.6;
+}
+
+.eic-refresh {
+	margin-top: 12px;
+}
+
+.eic-project {
+	max-height: 65vh;
+	overflow-y: auto;
+}
+
+.eic-ticket-list {
+	width: 24rem;
+	max-width: 100%;
+	min-height: 6rem;
+}

@@ -1,0 +1,596 @@
+{
+ "slug": "enterprise-issue-cards",
+ "module": "enterprise-issue-cards/tests/golden-runner",
+ "function": "runGoldenCase",
+ "note": "Pure operations use src/core.ts. Scenario operations run the plugin with local request and SecretStorage doubles.",
+ "cases": [
+  {
+   "name": "issue URL on the set host parses",
+   "args": [
+    "parse",
+    "https://git.example.test/team/repo/issues/42",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": true,
+    "part": {
+     "host": "git.example.test",
+     "owner": "team",
+     "repo": "repo",
+     "num": 42
+    }
+   }
+  },
+  {
+   "name": "api path for an enterprise server",
+   "args": [
+    "path",
+    {
+     "host": "git.example.test",
+     "owner": "team",
+     "repo": "repo",
+     "num": 42
+    }
+   ],
+   "expected": "/api/v3/repos/team/repo/issues/42"
+  },
+  {
+   "name": "cache key holds host repo and number",
+   "args": [
+    "key",
+    {
+     "host": "git.example.test",
+     "owner": "team",
+     "repo": "repo",
+     "num": 42
+    }
+   ],
+   "expected": "git.example.test/team/repo#42"
+  },
+  {
+   "name": "same number on two hosts makes two keys",
+   "args": [
+    "key",
+    {
+     "host": "other.example.test",
+     "owner": "team",
+     "repo": "repo",
+     "num": 42
+    }
+   ],
+   "expected": "other.example.test/team/repo#42"
+  },
+  {
+   "name": "same number in two repos makes two keys",
+   "args": [
+    "key",
+    {
+     "host": "git.example.test",
+     "owner": "team",
+     "repo": "other",
+     "num": 42
+    }
+   ],
+   "expected": "git.example.test/team/other#42"
+  },
+  {
+   "name": "url on a different host is rejected before a request",
+   "args": [
+    "parse",
+    "https://evil.example.test/team/repo/issues/7",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "Blocked: this URL points to evil.example.test, but the plugin is set to https://git.example.test. No token was sent."
+   }
+  },
+  {
+   "name": "http url is rejected",
+   "args": [
+    "parse",
+    "http://git.example.test/team/repo/issues/7",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "Blocked: the ticket URL must use HTTPS. This URL points outside https://git.example.test, so no token was sent."
+   }
+  },
+  {
+   "name": "not an issue url is rejected",
+   "args": [
+    "parse",
+    "https://git.example.test/team/repo/pulls/7",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "The URL is not an issue URL. Use https://HOST/OWNER/REPO/issues/NUMBER."
+   }
+  },
+  {
+   "name": "url without a set host is rejected",
+   "args": [
+    "parse",
+    "https://git.example.test/team/repo/issues/7",
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "Set the server host in the plugin settings first."
+   }
+  },
+  {
+   "name": "five fields extract and a null body becomes a message",
+   "args": [
+    "fields",
+    {
+     "title": "Fix login",
+     "state": "open",
+     "labels": [
+      {
+       "name": "bug"
+      },
+      {
+       "name": "auth"
+      }
+     ],
+     "user": {
+      "login": "ada"
+     },
+     "body": null
+    }
+   ],
+   "expected": {
+    "title": "Fix login",
+    "state": "open",
+    "labels": [
+     "bug",
+     "auth"
+    ],
+    "author": "ada",
+    "body": "(no body text on this issue)"
+   }
+  },
+  {
+   "name": "body line breaks survive extract",
+   "args": [
+    "fields",
+    {
+     "title": "T",
+     "state": "closed",
+     "labels": [],
+     "user": {
+      "login": "a"
+     },
+     "body": "one\ntwo"
+    }
+   ],
+   "expected": {
+    "title": "T",
+    "state": "closed",
+    "labels": [],
+    "author": "a",
+    "body": "one\ntwo"
+   }
+  },
+  {
+   "name": "card lines show all five fields",
+   "args": [
+    "lines",
+    {
+     "title": "Fix login",
+     "state": "open",
+     "labels": [
+      "bug",
+      "auth"
+     ],
+     "author": "ada",
+     "body": "line one\nline two"
+    }
+   ],
+   "expected": [
+    "Title: Fix login",
+    "State: open",
+    "Labels: bug, auth",
+    "Author: ada",
+    "line one",
+    "line two"
+   ]
+  },
+  {
+   "name": "card lines with no labels",
+   "args": [
+    "lines",
+    {
+     "title": "T",
+     "state": "open",
+     "labels": [],
+     "author": "a",
+     "body": ""
+    }
+   ],
+   "expected": [
+    "Title: T",
+    "State: open",
+    "Labels: (none)",
+    "Author: a",
+    ""
+   ]
+  },
+  {
+   "name": "plain host setting passes",
+   "args": [
+    "validate",
+    "https://git.example.test"
+   ],
+   "expected": null
+  },
+  {
+   "name": "trailing slash host passes",
+   "args": [
+    "validate",
+    "https://git.example.test/"
+   ],
+   "expected": null
+  },
+  {
+   "name": "http setting is rejected",
+   "args": [
+    "validate",
+    "http://git.example.test"
+   ],
+   "expected": "Only an HTTPS host works here. Use https://git.example.test, not http."
+  },
+  {
+   "name": "base path setting is rejected",
+   "args": [
+    "validate",
+    "https://git.example.test/ghe"
+   ],
+   "expected": "Use the root of the server, for example https://git.example.test. A base path is not supported."
+  },
+  {
+   "name": "empty setting is rejected",
+   "args": [
+    "validate",
+    ""
+   ],
+   "expected": "Set the HTTPS host of your GitHub Enterprise Server, for example https://git.example.test"
+  },
+  {
+   "name": "401 keeps the cache and names an access error",
+   "args": [
+    "err",
+    401,
+    {
+     "key": "k",
+     "fields": {
+      "title": "T",
+      "state": "open",
+      "labels": [],
+      "author": "a",
+      "body": "b"
+     },
+     "fetchedAt": 100
+    }
+   ],
+   "expected": {
+    "keepCache": true,
+    "message": "Access error: the server rejected the token. Check the token in the plugin settings. The token is not shown here."
+   }
+  },
+  {
+   "name": "403 keeps the cache",
+   "args": [
+    "err",
+    403,
+    null
+   ],
+   "expected": {
+    "keepCache": true,
+    "message": "Access error: the server rejected the token. Check the token in the plugin settings. The token is not shown here."
+   }
+  },
+  {
+   "name": "429 keeps the cache and does not retry",
+   "args": [
+    "err",
+    429,
+    {
+     "key": "k",
+     "fields": {
+      "title": "T",
+      "state": "open",
+      "labels": [],
+      "author": "a",
+      "body": "b"
+     },
+     "fetchedAt": 100
+    }
+   ],
+   "expected": {
+    "keepCache": true,
+    "message": "Rate limit: the server asked to slow down. Showing the last cached card. Retry by hand with the Refresh button."
+   }
+  },
+  {
+   "name": "offline keeps the cache",
+   "args": [
+    "err",
+    503,
+    {
+     "key": "k",
+     "fields": {
+      "title": "T",
+      "state": "open",
+      "labels": [],
+      "author": "a",
+      "body": "b"
+     },
+     "fetchedAt": 100
+    }
+   ],
+   "expected": {
+    "keepCache": true,
+    "message": "Network or server error (status 503). Showing the last cached card. Retry by hand."
+   }
+  },
+  {
+   "name": "404 without cache is a miss",
+   "args": [
+    "err",
+    404,
+    null
+   ],
+   "expected": {
+    "keepCache": false,
+    "message": "The server has no issue at this URL. Check the address, or the token may not see private issues."
+   }
+  },
+  {
+   "name": "host compare is case insensitive",
+   "args": [
+    "parse",
+    "https://GIT.Example.Test/team/repo/issues/3",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": true,
+    "part": {
+     "host": "git.example.test",
+     "owner": "team",
+     "repo": "repo",
+     "num": 3
+    }
+   }
+  },
+  {
+   "name": "runtime concurrent",
+   "args": [
+    "scenario",
+    "concurrent",
+    null
+   ],
+   "expected": {
+    "requests": 1,
+    "title": "Updated"
+   }
+  },
+  {
+   "name": "runtime secret",
+   "args": [
+    "scenario",
+    "secret",
+    null
+   ],
+   "expected": {
+    "secret": "fake-token",
+    "savedHasToken": false
+   }
+  },
+  {
+   "name": "runtime secretFailure",
+   "args": [
+    "scenario",
+    "secretFailure",
+    null
+   ],
+   "expected": {
+    "failed": true,
+    "saves": 0
+   }
+  },
+  {
+   "name": "runtime rate403",
+   "args": [
+    "scenario",
+    "rate403",
+    null
+   ],
+   "expected": {
+    "rate": true,
+    "requests": 1,
+    "fetchedAt": 100
+   }
+  },
+  {
+   "name": "runtime freeGuard",
+   "args": [
+    "scenario",
+    "freeGuard",
+    null
+   ],
+   "expected": {
+    "saved": false,
+    "requests": 0
+   }
+  },
+  {
+   "name": "runtime profile",
+   "args": [
+    "scenario",
+    "profile",
+    null
+   ],
+   "expected": {
+    "saved": true,
+    "authorized": true,
+    "separate": true,
+    "savedHasToken": false
+   }
+  },
+  {
+   "name": "runtime proOff",
+   "args": [
+    "scenario",
+    "proOff",
+    null
+   ],
+   "expected": {
+    "primary": true,
+    "other": false
+   }
+  },
+  {
+   "name": "runtime duplicates",
+   "args": [
+    "scenario",
+    "duplicates",
+    null
+   ],
+   "expected": [
+    "https://git.example.test/team/repo/issues/42"
+   ]
+  },
+  {
+   "name": "runtime beforeSchedule",
+   "args": [
+    "scenario",
+    "beforeSchedule",
+    null
+   ],
+   "expected": {
+    "requests": 0
+   }
+  },
+  {
+   "name": "runtime project",
+   "args": [
+    "scenario",
+    "project",
+    null
+   ],
+   "expected": {
+    "hasTitle": true,
+    "hasTime": true,
+    "requests": 0
+   }
+  },
+  {
+   "name": "runtime removeProfile",
+   "args": [
+    "scenario",
+    "removeProfile",
+    null
+   ],
+   "expected": {
+    "authorized": false
+   }
+  },
+  {
+   "name": "runtime notFound",
+   "args": [
+    "scenario",
+    "notFound",
+    null
+   ],
+   "expected": {
+    "missing": true,
+    "cached": false
+   }
+  },
+  {
+   "name": "runtime clearCache",
+   "args": [
+    "scenario",
+    "clearCache",
+    null
+   ],
+   "expected": {
+    "entries": 0,
+    "secret": "fake-token",
+    "requests": 0
+   }
+  },
+  {
+   "name": "runtime migration",
+   "args": [
+    "scenario",
+    "migration",
+    null
+   ],
+   "expected": {
+    "legacySaved": false,
+    "legacyUsed": false,
+    "savedTokenField": false
+   }
+  },
+  {
+   "name": "credentials are rejected before a request",
+   "args": [
+    "parse",
+    "https://user:pass@git.example.test/team/repo/issues/42",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "The issue URL must not contain credentials."
+   }
+  },
+  {
+   "name": "encoded separators are rejected",
+   "args": [
+    "parse",
+    "https://git.example.test/team/repo%2Fescape/issues/42",
+    "https://git.example.test"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "The URL is not an issue URL. Use https://HOST/OWNER/REPO/issues/NUMBER."
+   }
+  },
+  {
+   "name": "invalid host port is rejected",
+   "args": [
+    "validate",
+    "https://git.example.test:99999",
+    null
+   ],
+   "expected": "Use the root of the server, for example https://git.example.test. A base path is not supported."
+  },
+  {
+   "name": "image and script syntax remain literal card lines",
+   "args": [
+    "lines",
+    {
+     "title": "Ticket",
+     "state": "open",
+     "labels": [],
+     "author": "ada",
+     "body": "![image](https://outside.test/p.png)\n<script>alert(1)</script>"
+    },
+    null
+   ],
+   "expected": [
+    "Title: Ticket",
+    "State: open",
+    "Labels: (none)",
+    "Author: ada",
+    "![image](https://outside.test/p.png)",
+    "<script>alert(1)</script>"
+   ]
+  }
+ ]
+}
