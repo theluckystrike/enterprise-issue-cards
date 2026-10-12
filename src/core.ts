@@ -81,7 +81,7 @@ export interface CardFields {
 	body: string;
 }
 
-/** Picks the five fields. A null body becomes an empty-body message. */
+/** Picks the five fields. A null, empty or blank body becomes an empty-body message. */
 export function extractFields(issue: Record<string, unknown>): CardFields {
 	const labels = Array.isArray(issue.labels)
 		? issue.labels
@@ -101,7 +101,7 @@ export function extractFields(issue: Record<string, unknown>): CardFields {
 		state: typeof issue.state === 'string' ? issue.state : '',
 		labels,
 		author: typeof (issue.user as Record<string, unknown> | undefined)?.login === 'string' ? String((issue.user as { login: string }).login) : '',
-		body: rawBody === null ? '(no body text on this issue)' : rawBody,
+		body: rawBody === null || !rawBody.trim() ? '(no body text on this issue)' : rawBody,
 	};
 }
 

@@ -8,7 +8,7 @@ An engineer can keep a release plan next to the tickets that explain it. Enterpr
 
 ### Ticket cards in notes
 
-The five issue fields appear as plain text. Body line breaks are kept. An empty body has a short message. Markdown image syntax and HTML scripts remain text; the renderer creates no images or scripts from them. The original block stays in your note.
+The five issue fields appear as plain text. Body line breaks are kept. An empty or blank body has a short message. Markdown image syntax and HTML scripts remain text; the renderer creates no images or scripts from them. The original block stays in your note.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/enterprise-issue-cards/HEAD/docs/ticket-card.png" alt="Release note with an issue title, labels and body" width="720">
 
@@ -33,7 +33,7 @@ A mismatched host shows a blocked message before the request. Access failures, r
 
 ### Named server profiles (Pro)
 
-Save a name, HTTPS host and token for another server. The plugin matches a ticket URL to the primary host or a saved profile. Tokens use separate secret IDs for separate hosts. Removing a profile stops its use for cards; it leaves its secret in Obsidian storage. A negative sponsorship check disables additional hosts.
+Save a name, HTTPS host and token for another server. The plugin matches a ticket URL to the primary host or a saved profile. Tokens use separate secret IDs for separate hosts. An empty token field keeps the stored token of that host. Removing a profile stops its use for cards; it leaves its secret in Obsidian storage. A negative sponsorship check disables additional hosts.
 
 <img src="https://raw.githubusercontent.com/theluckystrike/enterprise-issue-cards/HEAD/docs/profiles.png" alt="Named profile form with server host and token fields" width="720">
 

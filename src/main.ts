@@ -155,8 +155,11 @@ export default class EnterpriseIssueCardsPlugin extends Plugin {
 	async saveProfile(profile: ServerProfile, token: string): Promise<boolean> {
 		if (!isPro() || !profile.name.trim() || !normalizeHost(profile.host)) return false;
 		const host = normalizeHost(profile.host);
-		await this.setToken(token, host);
-		this.settings.profiles = [...this.settings.profiles.filter((p) => p.name !== profile.name.trim()), { name: profile.name.trim(), host }];
+		// The settings keep 80 characters of a name. Compare that form, so a long name replaces its profile.
+		const name = profile.name.trim().slice(0, 80);
+		// An empty token field keeps the stored token of this host. That host can be the primary server.
+		if (token.trim()) await this.setToken(token, host);
+		this.settings.profiles = [...this.settings.profiles.filter((p) => p.name !== name), { name, host }];
 		await this.saveSettings(); this.redraw(false); return true;
 	}
 	async removeProfile(name: string): Promise<void> {

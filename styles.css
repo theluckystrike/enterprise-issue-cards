@@ -10,6 +10,9 @@
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 	line-height: 1.6;
+
+	/* An empty body line keeps one line of height, so paragraph breaks stay visible. */
+	min-height: 1.6em;
 }
 
 .eic-refresh {

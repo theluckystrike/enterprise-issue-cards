@@ -83,3 +83,9 @@ describe('requestUrl mock wiring', () => {
 		expect(requestUrlMock).toHaveBeenCalledOnce();
 	});
 });
+
+describe('extractFields empty body', () => {
+	it('shows the empty-body message for an empty or blank body, not only for null', () => {
+		for (const body of ['', '  \n ']) expect(extractFields({ title: 'T', state: 'open', labels: [], user: { login: 'a' }, body }).body).toBe('(no body text on this issue)');
+	});
+});

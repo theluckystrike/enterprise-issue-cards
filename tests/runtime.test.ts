@@ -137,6 +137,20 @@ describe('Pro guards', () => {
 		pro(false); expect(p.resolve('https://elsewhere.test/o/r/issues/1').ok).toBe(false);
 		expect(p.resolve(url).ok).toBe(true);
 	});
+	it('keeps the stored token of a host when a profile is saved with an empty token field', async () => {
+		pro(true); const { p } = await plugin();
+		expect(await p.saveProfile({ name: 'Same server', host: 'https://git.example.test' }, '')).toBe(true);
+		expect(await p.getToken()).toBe('private-token');
+		expect(await p.saveProfile({ name: 'Other', host: 'https://elsewhere.test' }, 'other-secret')).toBe(true);
+		expect(await p.saveProfile({ name: 'Other', host: 'https://elsewhere.test' }, '  ')).toBe(true);
+		expect(await p.getToken('https://elsewhere.test')).toBe('other-secret');
+	});
+	it('replaces a profile with a long name instead of adding a second copy', async () => {
+		pro(true); const { p } = await plugin(); const name = 'n'.repeat(100);
+		await p.saveProfile({ name, host: 'https://elsewhere.test' }, 'a');
+		await p.saveProfile({ name, host: 'https://third.test' }, 'b');
+		expect(p.settings.profiles).toEqual([{ name: 'n'.repeat(80), host: 'https://third.test' }]);
+	});
 	it('runs the saved list at the configured schedule and deduplicates URLs', async () => {
 		vi.useFakeTimers(); pro(true); const { p } = await plugin(); vi.spyOn(p, 'getToken').mockResolvedValue('private-token'); p.settings.tickets = `${url}\n${url}`; p.settings.refreshMinutes = 10;
 		p.issueRequest = vi.fn(async () => ({ status: 200, headers: {}, json: { title: 'scheduled' } }) as never);

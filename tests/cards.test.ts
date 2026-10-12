@@ -3,6 +3,7 @@ import { App } from 'obsidian-test-mocks/obsidian';
 import EnterpriseIssueCardsPlugin from '../src/main';
 import { resetPro } from '../src/pro';
 import manifest from '../manifest.json';
+import { readFileSync } from 'node:fs';
 
 type Processor = (source: string, el: HTMLElement, ctx: { addChild: (c: unknown) => void }) => void;
 const urlA = 'https://git.example.test/team/repo/issues/1';
@@ -62,5 +63,12 @@ describe('ticket cards on one note', () => {
 		expect(p.saveData).toHaveBeenCalledOnce();
 		expect(JSON.stringify(vi.mocked(p.saveData).mock.calls)).not.toContain('old-plain-token');
 		expect(await p.getToken()).toBe('');
+	});
+});
+
+describe('card styles', () => {
+	it('gives an empty body line the height of one text line, so paragraph breaks stay visible', () => {
+		const css = readFileSync('styles.css', 'utf8');
+		expect(/\.eic-line\s*\{[^}]*min-height:\s*1\.6em;/.exec(css)).not.toBeNull();
 	});
 });
