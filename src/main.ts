@@ -40,7 +40,7 @@ export default class EnterpriseIssueCardsPlugin extends Plugin {
 		}
 		// Remove the token copy made by the earlier unfinished build. Do not read or reuse it.
 		if (data && 'token' in data) await this.saveSettings();
-		this.pro = createGitHubSponsors(this.app, this.manifest.id, SPONSORS);
+		this.pro = createGitHubSponsors(this.app, this.manifest.id, SPONSORS, this);
 		this.pro.init();
 		bindPro(this.pro);
 		const settingTab = new EnterpriseIssueCardsSettingTab(this.app, this);

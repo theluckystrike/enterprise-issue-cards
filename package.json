@@ -1,6 +1,6 @@
 {
 	"name": "enterprise-issue-cards",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"private": true,
 	"description": "Show private GitHub ticket details in local notes.",
 	"main": "main.js",
