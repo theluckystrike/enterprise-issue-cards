@@ -52,7 +52,9 @@ Open the project list from the settings or the command palette. It shows cached 
 
 ## Install
 
-Use the built files supplied by the publisher: `main.js`, `manifest.json` and `styles.css`. Put them in `<vault>/<config-folder>/plugins/enterprise-issue-cards/`, then enable Enterprise Issue Cards under Community plugins. The usual configuration folder is `.obsidian`. This build requires Obsidian 1.13.4 or later. The source is under the MIT license. A community listing and public release are publisher tasks.
+Open Settings, then Community plugins, then Browse, and search for "Enterprise Issue Cards". Select Install, then Enable.
+
+To install by hand, put `main.js`, `manifest.json` and `styles.css` from the latest release in `<vault>/<config-folder>/plugins/enterprise-issue-cards/`, then enable Enterprise Issue Cards under Community plugins. The usual configuration folder is `.obsidian`. This build requires Obsidian 1.13.4 or later. The source is under the MIT license.
 
 ## Usage
 
@@ -69,6 +71,8 @@ url: https://git.example.test/team/repo/issues/42
 The `url:` prefix is optional. The first nonempty line holds the issue URL; later lines are ignored. Use a separate block for another issue. A new card reads the server if it lacks a cache entry. A cached card displays the saved copy. Select Refresh when you need current fields. The plugin reads issues; it does not edit them or change note text.
 
 ## Settings
+
+After a minor or major update, this plugin opens one What's new tab in the background. The tab and settings card suggest other NoteMods plugins and Zovo Chat and link to notemods.com for feedback ([privacy](https://notemods.com/privacy/)). The tab sends no data. Turn the tab off in Settings.
 
 The Server host field sets the free primary server. Save token writes the pasted value to SecretStorage for that host; saving an empty value clears it. Changing the host selects that host's separate secret. Clear cache removes saved issue text from plugin data without removing tokens.
 

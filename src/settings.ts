@@ -3,6 +3,7 @@ import { sponsorsSettingItems } from './license/github-obsidian';
 import { normalizeHost, validateHost } from './core';
 import { isPro, PRO_UI } from './pro';
 import type EnterpriseIssueCardsPlugin from './main';
+import { helloSettingItems } from './hello/settings';
 
 export interface ServerProfile { name: string; host: string }
 export interface EnterpriseIssueCardsSettings {
@@ -24,6 +25,11 @@ export class EnterpriseIssueCardsSettingTab extends PluginSettingTab {
 	plugin: EnterpriseIssueCardsPlugin;
 	constructor(app: App, plugin: EnterpriseIssueCardsPlugin) { super(app, plugin); this.plugin = plugin; }
 	getSettingDefinitions(): SettingDefinitionItem[] {
+		// The product rows, then the "More from NoteMods" card (packages/hello).
+		return [...this.productSettingDefinitions(), ...helloSettingItems()];
+	}
+
+	productSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			...(this.plugin.pro ? sponsorsSettingItems(this.plugin.pro, PRO_UI) : []),
 			{ name: 'Server host', desc: 'Root HTTPS host of your Enterprise Server. HTTP and base paths are not supported.', control: { type: 'text', key: 'host', placeholder: 'https://git.example.test', validate: (v) => validateHost(String(v)) ?? undefined } },

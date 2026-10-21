@@ -42,7 +42,7 @@ export async function runGoldenCase(op:string,a:unknown,b:unknown):Promise<unkno
    case 'removeProfile': {pro(true);await p.saveProfile({name:'Other',host:'https://other.test'},'other-token');await p.removeProfile('Other');return {authorized:p.resolve('https://other.test/o/r/issues/1').ok};}
    case 'notFound': {p.issueRequest=vi.fn(async()=>({status:404,headers:{}}) as never);return {missing:(await p.fetchIssue(URL)).includes('no issue'),cached:!!p.cache[KEY]};}
    case 'clearCache': {await p.clearCache();return {entries:Object.keys(p.cache).length,secret:await p.getToken(),requests:vi.mocked(p.issueRequest).mock.calls.length};}
-   case 'migration': {p.loadData=vi.fn(async()=>({host:p.settings.host,token:'legacy-secret',cache:{}}));await p.onload();return {legacySaved:JSON.stringify(vi.mocked(p.saveData).mock.calls).includes('legacy-secret'),legacyUsed:(await p.getToken())==='legacy-secret',savedTokenField:(vi.mocked(p.saveData).mock.calls[0][0] as Record<string,unknown>).token!==undefined};}
+   case 'migration': {p.loadData=vi.fn(async()=>({host:p.settings.host,token:'legacy-secret',cache:{}}));const save=vi.mocked(p.saveData);await p.onload();return {legacySaved:JSON.stringify(save.mock.calls).includes('legacy-secret'),legacyUsed:(await p.getToken())==='legacy-secret',savedTokenField:(save.mock.calls[0][0] as Record<string,unknown>).token!==undefined};}
    default:throw new Error('Unknown golden scenario '+String(a));
   }
  }finally{resetPro();}

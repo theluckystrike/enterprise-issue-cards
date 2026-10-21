@@ -57,11 +57,13 @@ describe('ticket cards on one note', () => {
 		const get = vi.fn(() => null);
 		Object.defineProperty(app, 'secretStorage', { value: { getSecret: get, setSecret: vi.fn() }, configurable: true });
 		const p = new EnterpriseIssueCardsPlugin(app as never, manifest as never);
-		p.saveData = vi.fn(async () => undefined);
+		const save = vi.fn(async () => undefined);
+		p.saveData = save;
 		p.loadData = vi.fn(async () => ({ host: 'https://git.example.test', token: 'old-plain-token' }));
 		await p.onload();
-		expect(p.saveData).toHaveBeenCalledOnce();
-		expect(JSON.stringify(vi.mocked(p.saveData).mock.calls)).not.toContain('old-plain-token');
+		// onload wraps saveData for the What's new state (packages/hello), so check the original spy.
+		expect(save).toHaveBeenCalledOnce();
+		expect(JSON.stringify(save.mock.calls)).not.toContain('old-plain-token');
 		expect(await p.getToken()).toBe('');
 	});
 });

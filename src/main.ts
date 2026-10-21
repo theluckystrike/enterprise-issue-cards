@@ -5,6 +5,8 @@ import { SPONSORS, PRO_UI, bindPro, isPro, onProChange, resetPro } from './pro';
 import { createGitHubSponsors } from './license/github-obsidian';
 import type { SponsorsManager } from './license/index';
 import { requestEnterpriseIssue } from './enterprise-request';
+import { setupHello } from './hello/index';
+import WHATS_NEW from './whats-new.json';
 
 export async function tokenId(host: string): Promise<string> {
 	const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalizeHost(host)));
@@ -27,6 +29,8 @@ export default class EnterpriseIssueCardsPlugin extends Plugin {
 	private refreshing = false;
 
 	async onload(): Promise<void> {
+		// First: "What's new" reads its state before the settings load (packages/hello). It does not wait.
+		setupHello(this, WHATS_NEW);
 		const data = await this.loadData() as Record<string, unknown> | null;
 		this.settings = normalizeSettings(data);
 		if (data?.cache && typeof data.cache === 'object') {
