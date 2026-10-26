@@ -1,7 +1,7 @@
 import { MarkdownRenderChild, Modal, Notice, Plugin, Setting, type RequestUrlResponse } from 'obsidian';
 import { cardLines, cacheKey, extractFields, normalizeHost, onFetchError, parseIssueUrl, type CacheEntry, type IssueUrlPart } from './core';
 import { DEFAULT_SETTINGS, EnterpriseIssueCardsSettingTab, normalizeSettings, type EnterpriseIssueCardsSettings, type ServerProfile } from './settings';
-import { SPONSORS, PRO_UI, bindPro, isPro, onProChange, resetPro } from './pro';
+import { SPONSORS, PRO_UI, bindPro, isPro, onProChange, resetPro, proNotice } from './pro';
 import { createGitHubSponsors } from './license/github-obsidian';
 import type { SponsorsManager } from './license/index';
 import { requestEnterpriseIssue } from './enterprise-request';
@@ -173,7 +173,7 @@ export default class EnterpriseIssueCardsPlugin extends Plugin {
 	}
 	openProfile(): Modal | undefined { if (!this.requirePro()) return; const modal = new ProfileModal(this); modal.open(); return modal; }
 	openProject(): Modal | undefined { if (!this.requirePro()) return; const modal = new ProjectModal(this); modal.open(); return modal; }
-	private requirePro(): boolean { if (isPro()) return true; new Notice('This is a pro feature. Sponsor on GitHub, then sign in from the plugin settings.'); return false; }
+	private requirePro(): boolean { if (isPro()) return true; proNotice('This is a pro feature.'); return false; }
 }
 
 class TicketRenderChild extends MarkdownRenderChild {

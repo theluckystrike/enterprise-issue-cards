@@ -1,5 +1,11 @@
 # enterprise-issue-cards
 
+## 1.1.1
+
+### Patch Changes
+
+- The Pro notice for the local project list now has a Sponsor on GitHub button.
+
 ## 1.1.0
 
 ### Minor Changes
