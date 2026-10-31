@@ -96,7 +96,7 @@ No live Enterprise Server, private certificate authority, redirect behavior, Lin
 
 The core features are free. Pro features need a GitHub Sponsors sponsorship of theluckystrike: $5 a month or more, or $15 once. A total payment of $15 meets the payment requirement for Pro without further payment. Sign-in and the checks below still apply. Your notes stay readable and editable with or without Pro.
 
-GitHub handles the payment. Sponsor at https://github.com/sponsors/theluckystrike. Reading issues from the server needs a GitHub Enterprise Server account with access to those issues. Cached cards can be read without a server sign-in. Pro also needs the GitHub account that sponsors.
+GitHub handles the payment. Sponsor at https://github.com/sponsors/theluckystrike?frequency=one-time&metadata_source=enterprise-issue-cards. Reading issues from the server needs a GitHub Enterprise Server account with access to those issues. Cached cards can be read without a server sign-in. Pro also needs the GitHub account that sponsors.
 
 The declaration network_user_hosts: github-enterprise-issues permits the HTTPS server hosts you set in the plugin. A ticket read sends the repository owner, repository name and issue number from the ticket block, plus the token for that server, to its /api/v3/repos/OWNER/REPO/issues/NUMBER endpoint. An uncached card or its Refresh button can send this request before GitHub Sponsors sign-in. Pro can refresh the saved list after an eligible sponsorship check. Note names, local paths and surrounding note text are not sent. Cached private issue text is stored in the vault data.json file and can sync with the vault. Tokens use Obsidian SecretStorage only.
 
